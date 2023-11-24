@@ -24,6 +24,10 @@ class WebviewWindowController: NSWindowController {
 
   private let isAlwayOnTop: Bool
 
+  private let windowPosX: Int
+
+  private let windowPosY: Int
+
   public weak var webviewPlugin: DesktopWebviewWindowPlugin?
 
   @objc func pinButtonClicked(button: NSButton) {
@@ -68,7 +72,7 @@ class WebviewWindowController: NSWindowController {
   init(viewId: Int64, methodChannel: FlutterMethodChannel,
        width: Int, height: Int,
        title: String, titleBarHeight: Int,
-       isAlwayOnTop: Bool,
+       isAlwayOnTop: Bool, windowPosX: Int, windowPosY: Int,
        titleBarTopPadding: Int) {
     self.viewId = viewId
     self.methodChannel = methodChannel
@@ -78,9 +82,11 @@ class WebviewWindowController: NSWindowController {
     self.titleBarTopPadding = titleBarTopPadding
     self.title = title
     self.isAlwayOnTop = isAlwayOnTop
+    self.windowPosX = windowPosX
+    self.windowPosY = windowPosY
     super.init(window: nil)
 
-    let newWindow = NSWindow(contentRect: NSRect(x: 0, y: 0, width: width, height: height), styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
+    let newWindow = NSWindow(contentRect: NSRect(x: windowPosX, y: windowPosY, width: width, height: height), styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
     newWindow.delegate = self
     newWindow.title = title
     newWindow.titlebarAppearsTransparent = true
@@ -93,8 +99,11 @@ class WebviewWindowController: NSWindowController {
       titleBarTopPadding: titleBarTopPadding)
     newWindow.contentViewController = contentViewController
     newWindow.setContentSize(NSSize(width: width, height: height))
-    newWindow.center()
-
+    
+    if(windowPosX == 0 && windowPosY == 0){
+      newWindow.center()
+    }
+    
     window = newWindow
   }
 
