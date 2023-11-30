@@ -61,7 +61,7 @@ class WebviewImpl extends Webview {
   }
 
   bool notifyUrlChanged(String url) {
-    if(_onUrlRequestCallback != null) {
+    if (_onUrlRequestCallback != null) {
       return _onUrlRequestCallback!(url);
     } else {
       return true;
@@ -123,7 +123,7 @@ class WebviewImpl extends Webview {
   }
 
   @override
-  void launch(String url, {bool triggerOnUrlRequestEvent=true}) async {
+  void launch(String url, {bool triggerOnUrlRequestEvent = true}) async {
     await channel.invokeMethod("launch", {
       "url": url,
       "viewId": viewId,
@@ -236,7 +236,8 @@ class WebviewImpl extends Webview {
   }
 
   @override
-  void removeOnWebMessageReceivedCallback(OnWebMessageReceivedCallback callback) {
+  void removeOnWebMessageReceivedCallback(
+      OnWebMessageReceivedCallback callback) {
     _onWebMessageReceivedCallbacks.remove(callback);
   }
 

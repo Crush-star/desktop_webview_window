@@ -28,12 +28,43 @@ class WebviewWindowController: NSWindowController {
 
   private let windowPosY: Int
 
+  private let showCopyButton:  Bool
+
   public weak var webviewPlugin: DesktopWebviewWindowPlugin?
 
   @objc func pinButtonClicked(button: NSButton) {
     window?.level = window?.level == .floating ? .normal : .floating
     button.contentTintColor = window?.level == .floating ?  NSColor.white : NSColor.gray
   }
+    
+  @objc func copyButtonClicked() {
+    methodChannel.invokeMethod("onClickCopy", arguments: ["id": viewId])
+  }
+
+    fileprivate func createCopyButton(window: NSWindow) {
+        let titleBarView = window.standardWindowButton(.closeButton)!.superview!
+        let copyBtn = NSButton()
+        copyBtn.setButtonType(.momentaryPushIn)
+        // copyBtn.layer?.backgroundColor = NSColor(displayP3Red: 148/255, green: 180/255, blue: 255/255, alpha: 1).cgColor
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: NSColor(displayP3Red: 0/255, green: 32/255, blue: 108/255, alpha: 1) //字的颜色
+        ]
+        let attributedString = NSAttributedString(string: "复制链接", attributes: attributes)
+        copyBtn.attributedTitle = attributedString
+
+        if let font = NSFont(name: "Arial", size: 12) {
+            copyBtn.font = font
+        }
+        copyBtn.action = #selector(copyButtonClicked)
+        titleBarView.addSubview(copyBtn)
+        copyBtn.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            copyBtn.widthAnchor.constraint(equalToConstant: 70.0),
+            copyBtn.heightAnchor.constraint(equalToConstant: 22.0),
+            copyBtn.trailingAnchor.constraint(equalTo: titleBarView.trailingAnchor, constant: -35),
+            copyBtn.topAnchor.constraint(equalTo: titleBarView.topAnchor, constant: 5)
+        ])
+    }
     
   fileprivate func createToggleFloating(window: NSWindow) {
     let titleBarView = window.standardWindowButton(.closeButton)!.superview!
@@ -65,7 +96,7 @@ class WebviewWindowController: NSWindowController {
         btn.widthAnchor.constraint(equalToConstant: 15.0),
         btn.heightAnchor.constraint(equalToConstant: 15.0),
         btn.trailingAnchor.constraint(equalTo: titleBarView.trailingAnchor, constant: -10),
-        btn.topAnchor.constraint(equalTo: titleBarView.topAnchor, constant: 7)
+        btn.topAnchor.constraint(equalTo: titleBarView.topAnchor, constant: 8)
     ])
   }
 
@@ -73,7 +104,8 @@ class WebviewWindowController: NSWindowController {
        width: Int, height: Int,
        title: String, titleBarHeight: Int,
        isAlwayOnTop: Bool, windowPosX: Int, windowPosY: Int,
-       titleBarTopPadding: Int) {
+       titleBarTopPadding: Int, showCopyButton: Bool
+  ) {
     self.viewId = viewId
     self.methodChannel = methodChannel
     self.width = width
@@ -84,6 +116,7 @@ class WebviewWindowController: NSWindowController {
     self.isAlwayOnTop = isAlwayOnTop
     self.windowPosX = windowPosX
     self.windowPosY = windowPosY
+    self.showCopyButton = showCopyButton
     super.init(window: nil)
 
     let newWindow = NSWindow(contentRect: NSRect(x: windowPosX, y: windowPosY, width: width, height: height), styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
@@ -92,6 +125,9 @@ class WebviewWindowController: NSWindowController {
     newWindow.titlebarAppearsTransparent = true
 
     createToggleFloating(window: newWindow)
+    if (showCopyButton) {
+      createCopyButton(window: newWindow)
+    }
 
     let contentViewController = WebViewLayoutController(
       methodChannel: methodChannel,

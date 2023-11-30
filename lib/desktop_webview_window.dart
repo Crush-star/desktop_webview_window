@@ -28,6 +28,8 @@ class WebviewWindow {
 
   static bool _inited = false;
 
+  static Map<String, Function?> onClickCopyMap = {};
+
   static void _init() {
     if (_inited) {
       return;
@@ -61,6 +63,7 @@ class WebviewWindow {
 
   static Future<Webview> create({
     CreateConfiguration? configuration,
+    Function? onClickCopy,
   }) async {
     configuration ??= CreateConfiguration.platform();
     _init();
@@ -68,6 +71,7 @@ class WebviewWindow {
       "create",
       configuration.toMap(),
     ) as int;
+    onClickCopyMap[viewId.toString()] = onClickCopy;
     final webview = WebviewImpl(viewId, _channel);
     _webviews.add(webview);
     return webview;
@@ -111,6 +115,12 @@ class WebviewWindow {
       return;
     }
     switch (call.method) {
+      case "onClickCopy":
+        final func = onClickCopyMap[viewId.toString()];
+        if (func != null) {
+          func();
+        }
+        break;
       case "onWindowClose":
         _webviews.remove(webview);
         webview.onClosed();

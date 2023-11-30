@@ -15,6 +15,8 @@ class CreateConfiguration {
 
   final bool isAlwayOnTop;
 
+  final bool showCopyButton;
+
   final int titleBarTopPadding;
 
   final String userDataFolderWindows;
@@ -28,6 +30,7 @@ class CreateConfiguration {
     this.windowPosX = 0,
     this.windowPosY = 0,
     this.isAlwayOnTop = false,
+    this.showCopyButton = false,
     this.title = "",
     this.titleBarHeight = 40,
     this.titleBarTopPadding = 0,
@@ -48,6 +51,7 @@ class CreateConfiguration {
         "windowPosX": windowPosX,
         "windowPosY": windowPosY,
         "title": title,
+        "showCopyButton": showCopyButton,
         "isAlwayOnTop": isAlwayOnTop,
         "titleBarHeight": titleBarHeight,
         "titleBarTopPadding": titleBarTopPadding,

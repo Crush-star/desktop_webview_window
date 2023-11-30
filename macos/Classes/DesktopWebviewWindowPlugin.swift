@@ -36,13 +36,14 @@ public class DesktopWebviewWindowPlugin: NSObject, FlutterPlugin {
       let windowPosX = argument["windowPosX"] as? Int ?? 0
       let windowPosY = argument["windowPosY"] as? Int ?? 0
       let isAlwayOnTop = argument["isAlwayOnTop"] as? Bool ?? false
+      let showCopyButton = argument["showCopyButton"] as? Bool ?? false
 
       let controller = WebviewWindowController(
         viewId: viewId, methodChannel: methodChannel,
         width: width, height: height, title: title,
         titleBarHeight: titleBarHeight, isAlwayOnTop: isAlwayOnTop,
         windowPosX: windowPosX, windowPosY: windowPosY,
-        titleBarTopPadding: titleBarTopPadding
+        titleBarTopPadding: titleBarTopPadding, showCopyButton: showCopyButton
       )
       controller.webviewPlugin = self
       webviews[viewId] = controller
